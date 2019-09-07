@@ -1,0 +1,243 @@
+openapi: 3.0.0
+info:
+  title: instagram-clone
+  version: '1.0'
+  description: instagram clone
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /comment:
+    post:
+      summary: ''
+      responses:
+        '201':
+          description: Created
+          headers: {}
+        '400':
+          description: Bad Request
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+          description: jwt token with Bearer prefix
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: integer
+                comment_content:
+                  type: string
+  '/account/{userId}':
+    parameters:
+      name: userId
+      in: path
+      required: true
+      type: string
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+    put:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+      description: 계정 수정
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+      description: 계정 삭제
+  '/post/{postId}':
+    parameters:
+      name: postId
+      in: path
+      required: true
+      type: string
+    put:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+    get:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+      description: ''
+  /post:
+    post:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+  /account:
+    post:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errFieldlist:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fieldName:
+                          type: string
+                        errorMsg:
+                          type: string
+        '500':
+          description: Internal Server Error
+      description: 회원가입
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                nickname:
+                  type: string
+                password:
+                  type: string
+        description: 회원가입 정보
+  '/comment/{commentId}':
+    parameters:
+      name: commentId
+      in: path
+      required: true
+      type: string
+    put:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+  '/post/{postId}/comment/':
+    parameters:
+      name: postId
+      in: path
+      required: true
+      type: string
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+      description: 해당 포스트에 연결되어있는 댓글을 다 가져온다
+  '/like/post/{postId}':
+    parameters:
+      name: postId
+      in: path
+      required: true
+      type: string
+    post:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+  '/like/comment/{commentId}':
+    parameters:
+      name: commentId
+      in: path
+      required: true
+      type: string
+    post:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+  '/account/follow/{accountId}':
+    parameters:
+      name: accountId
+      in: path
+      required: true
+      type: string
+    post:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+      description: ''
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+      description: ''
+  /auth:
+    post:
+      summary: ''
+      description: 로그인
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+        description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jwt:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+        '500':
+          description: Internal Server Error
+      description: 로그아웃
+      requestBody: {}
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: Authorization
+  /timeline:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses: {}
+components:
+  schemas: {}
