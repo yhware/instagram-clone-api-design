@@ -1,0 +1,13 @@
+title: BadParamRes
+type: object
+description: Request Param 중 잘못 된 값이 있을 경우 이를 알려주는 포맷
+properties:
+  err_field_list:
+    type: array
+    items:
+      type: object
+      properties:
+        field_name:
+          type: string
+        err_msg:
+          type: string

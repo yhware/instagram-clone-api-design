@@ -15,12 +15,17 @@ paths:
           headers: {}
         '400':
           description: Bad Request
-      parameters:
-        - schema:
-            type: string
-          in: header
-          name: Authorization
-          description: jwt token with Bearer prefix
+          content:
+            application/json:
+              schema:
+                $ref: ./models/badparamres.v1.yaml
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      parameters: []
       description: ''
       requestBody:
         content:
@@ -32,28 +37,68 @@ paths:
                   type: integer
                 comment_content:
                   type: string
-  '/account/{userId}':
+      security:
+        - JWT: []
+  '{username}':
     parameters:
-      name: userId
-      in: path
-      required: true
-      type: string
+      - type: string
+        name: accountId
+        in: path
+        required: true
     get:
-      summary: Your GET endpoint
+      summary: 개인 페이지 (본인 포스팅 볼 수 있는 곳)
       tags: []
-      responses: {}
-    put:
-      summary: ''
       responses:
         '200':
           description: OK
-      description: 계정 수정
-    delete:
-      summary: ''
-      responses:
-        '200':
-          description: OK
-      description: 계정 삭제
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+        '':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  account:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      nickname:
+                        type: string
+                      post_cnt:
+                        type: integer
+                      follower_cnt:
+                        type: integer
+                      following_cnt:
+                        type: integer
+                      profile_photo_url:
+                        type: string
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        post_id:
+                          type: integer
+                        post_photo_url:
+                          type: string
+                        post_like_cnt:
+                          type: integer
+                        post_comment_cnt:
+                          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      security:
+        - JWT: []
+      description: ''
   '/post/{postId}':
     parameters:
       name: postId
@@ -61,53 +106,162 @@ paths:
       required: true
       type: string
     put:
-      summary: ''
+      summary: 포스트 수정
       responses:
         '200':
           description: OK
-    delete:
-      summary: ''
-      responses:
-        '200':
-          description: OK
-    get:
-      summary: ''
-      responses:
-        '200':
-          description: OK
-      description: ''
-  /post:
-    post:
-      summary: ''
-      responses:
-        '200':
-          description: OK
-  /account:
-    post:
-      summary: ''
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
         '400':
           description: Bad Request
           content:
             application/json:
               schema:
+                $ref: ./models/badparamres.v1.yaml
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      security:
+        - JWT: []
+    delete:
+      summary: 포스트 삭제
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+    get:
+      summary: 포스트 조회
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  errFieldlist:
+                  post_id:
+                    type: number
+                  post_content:
+                    type: string
+                  comments:
                     type: array
                     items:
                       type: object
                       properties:
-                        fieldName:
+                        comment_id:
+                          type: number
+                        comment_content:
                           type: string
-                        errorMsg:
+                        comment_author:
+                          type: object
+                          properties:
+                            account_id:
+                              type: number
+                            account_url:
+                              type: string
+                            account_nickname:
+                              type: string
+                            account_profile_photo_url:
+                              type: string
+                        comment_dt:
                           type: string
+                  likes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        like_id:
+                          type: number
+                        like_account:
+                          type:
+                            - number
+                            - object
+                          properties:
+                            account_id:
+                              type: number
+                            account_profile_photo_url:
+                              type: string
+                            account_nickname:
+                              type: string
+                  post_dt:
+                    type: string
+                  photo_url:
+                    type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      description: ''
+      parameters: []
+      security:
+        - scheme_0: []
+  /post:
+    post:
+      summary: 포스트 생성
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: 포스트 링크
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      security:
+        - scheme_0: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_content:
+                  type: string
+                media_id:
+                  type: number
+                  description: 미리 업로드 한 첨부파일 PK
+              required:
+                - post_content
+                - media_id
+        description: ''
+  /account:
+    post:
+      summary: ''
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: 사용자 프로필 URL
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ./models/badparamres.v1.yaml
         '500':
           description: Internal Server Error
       description: 회원가입
@@ -135,11 +289,45 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ./models/badparamres.v1.yaml
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment_content:
+                  type: string
+        description: ''
+      description: 댓글 수정
+      security:
+        - JWT: []
     delete:
       summary: ''
       responses:
         '200':
           description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      security:
+        - JWT: []
   '/post/{postId}/comment/':
     parameters:
       name: postId
@@ -147,10 +335,52 @@ paths:
       required: true
       type: string
     get:
-      summary: Your GET endpoint
+      summary: 포스트 소속 모든 댓글 조회
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    comment_id:
+                      type: number
+                    comment_content:
+                      type: string
+                    comment_author:
+                      type: object
+                      properties:
+                        account_id:
+                          type: number
+                        account_nickname:
+                          type: string
+                        account_profile_photo_url:
+                          type: string
+                    likes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          liking_account_id:
+                            type: number
+                          liking_account_nickname:
+                            type: string
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
       description: 해당 포스트에 연결되어있는 댓글을 다 가져온다
+      security:
+        - scheme_0: []
+      requestBody: {}
   '/like/post/{postId}':
     parameters:
       name: postId
@@ -160,8 +390,20 @@ paths:
     post:
       summary: ''
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        description: ''
+      security:
+        - JWT: []
   '/like/comment/{commentId}':
     parameters:
       name: commentId
@@ -171,8 +413,18 @@ paths:
     post:
       summary: ''
       responses:
-        '200':
-          description: OK
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      security:
+        - JWT: []
   '/account/follow/{accountId}':
     parameters:
       name: accountId
@@ -184,13 +436,25 @@ paths:
       responses:
         '200':
           description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
       description: ''
+      security:
+        - JWT: []
     delete:
       summary: ''
       responses:
         '200':
           description: OK
       description: ''
+      security:
+        - JWT: []
   /auth:
     post:
       summary: ''
@@ -234,10 +498,219 @@ paths:
             type: string
           in: header
           name: Authorization
+      security:
+        - JWT: []
   /timeline:
+    get:
+      summary: 타임라인
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post_id:
+                    type: number
+                  post_content:
+                    type: string
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        comment_id:
+                          type: number
+                        comment_content:
+                          type: string
+                        comment_author:
+                          type: object
+                          properties:
+                            account_id:
+                              type: number
+                            account_url:
+                              type: string
+                            account_nickname:
+                              type: string
+                            account_profile_photo_url:
+                              type: string
+                        comment_dt:
+                          type: string
+                  likes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        like_id:
+                          type: number
+                        like_account:
+                          type:
+                            - number
+                            - object
+                          properties:
+                            account_id:
+                              type: number
+                            account_profile_photo_url:
+                              type: string
+                            account_nickname:
+                              type: string
+                  post_dt:
+                    type: string
+                  photo_url:
+                    type: string
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+      security:
+        - scheme_0: []
+      requestBody: {}
+  /attachment/post-photo:
+    post:
+      summary: ''
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Attachment ID
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              type: object
+              properties: {}
+          image/png:
+            schema:
+              type: object
+              properties: {}
+          image/gif:
+            schema:
+              type: object
+              properties: {}
+        description: 포스트 사진
+      security:
+        - JWT: []
+  /attachment/profile-photo:
+    post:
+      summary: ''
+      responses:
+        '201':
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Attachment URL
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          image/jpeg:
+            schema:
+              type: object
+              properties: {}
+          image/png:
+            schema:
+              type: object
+              properties: {}
+          image/gif:
+            schema:
+              type: object
+              properties: {}
+      parameters: []
+      security:
+        - JWT: []
+  '/account/{accountId}':
+    parameters:
+      - schema:
+          type: integer
+        name: accountId
+        in: path
+        required: true
+        description: ''
     get:
       summary: Your GET endpoint
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: ./models/account.v1.yaml
+              examples: {}
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      security:
+        - JWT: []
+      requestBody: {}
+    put:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: ./models/account.v1.yaml
+      security:
+        - JWT: []
+    delete:
+      summary: ''
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal Server Error
+      security:
+        - JWT: []
 components:
   schemas: {}
+  securitySchemes:
+    JWT:
+      name: API Key
+      type: apiKey
+      in: header
+      description: JWT
