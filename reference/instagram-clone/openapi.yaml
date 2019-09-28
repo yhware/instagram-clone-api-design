@@ -26,7 +26,7 @@ paths:
         '500':
           description: Internal Server Error
       parameters: []
-      description: ''
+      description: 대호님
       requestBody:
         content:
           application/json:
@@ -98,7 +98,7 @@ paths:
               type: object
       security:
         - JWT: []
-      description: ''
+      description: 대호님
   '/post/{postId}':
     parameters:
       name: postId
@@ -126,6 +126,7 @@ paths:
           description: Internal Server Error
       security:
         - JWT: []
+      description: 유홍
     delete:
       summary: 포스트 삭제
       responses:
@@ -139,6 +140,7 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
+      description: 유홍
     get:
       summary: 포스트 조회
       responses:
@@ -205,7 +207,7 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
-      description: ''
+      description: 유홍
       parameters: []
       security:
         - scheme_0: []
@@ -245,6 +247,7 @@ paths:
                 - post_content
                 - media_id
         description: ''
+      description: 유홍 (완료)
   /account:
     post:
       summary: ''
@@ -255,7 +258,7 @@ paths:
             Location:
               schema:
                 type: string
-              description: 사용자 프로필 URL
+              description: 사용자 URI
         '400':
           description: Bad Request
           content:
@@ -277,7 +280,7 @@ paths:
                   type: string
                 password:
                   type: string
-        description: 회원가입 정보
+        description: 회원가입 정보 (완료)
   '/comment/{commentId}':
     parameters:
       name: commentId
@@ -312,7 +315,7 @@ paths:
                 comment_content:
                   type: string
         description: ''
-      description: 댓글 수정
+      description: 댓글 수정 (대호님)
       security:
         - JWT: []
     delete:
@@ -404,6 +407,7 @@ paths:
         description: ''
       security:
         - JWT: []
+      description: 동길님
   '/like/comment/{commentId}':
     parameters:
       name: commentId
@@ -425,6 +429,7 @@ paths:
           description: Internal Server Error
       security:
         - JWT: []
+      description: 동길님
   '/account/follow/{accountId}':
     parameters:
       name: accountId
@@ -444,7 +449,7 @@ paths:
           description: Not Found
         '500':
           description: Internal Server Error
-      description: ''
+      description: 동길님
       security:
         - JWT: []
     delete:
@@ -452,13 +457,13 @@ paths:
       responses:
         '200':
           description: OK
-      description: ''
+      description: 동길님
       security:
         - JWT: []
   /auth:
     post:
       summary: ''
-      description: 로그인
+      description: '로그인 (동길님, 완료)'
       requestBody:
         content:
           application/json:
@@ -491,7 +496,7 @@ paths:
           description: OK
         '500':
           description: Internal Server Error
-      description: 로그아웃
+      description: 로그아웃 (은수님)
       requestBody: {}
       parameters:
         - schema:
@@ -567,6 +572,7 @@ paths:
       security:
         - scheme_0: []
       requestBody: {}
+      description: 유홍
   /attachment/post-photo:
     post:
       summary: ''
@@ -601,6 +607,7 @@ paths:
         description: 포스트 사진
       security:
         - JWT: []
+      description: '(유홍, 완료)'
   /attachment/profile-photo:
     post:
       summary: ''
@@ -639,6 +646,7 @@ paths:
       parameters: []
       security:
         - JWT: []
+      description: 유홍
   '/account/{accountId}':
     parameters:
       - schema:
@@ -669,6 +677,7 @@ paths:
       security:
         - JWT: []
       requestBody: {}
+      description: 은수님
     put:
       summary: ''
       responses:
@@ -691,8 +700,9 @@ paths:
               $ref: ./models/account.v1.yaml
       security:
         - JWT: []
+      description: 은수님
     delete:
-      summary: ''
+      summary: 탈퇴
       responses:
         '200':
           description: OK
@@ -706,6 +716,7 @@ paths:
           description: Internal Server Error
       security:
         - JWT: []
+      description: 은수님
 components:
   schemas: {}
   securitySchemes:
